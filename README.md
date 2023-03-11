@@ -499,6 +499,164 @@
 
                 constructor(objectOrError?: string | object | any, description?: string);
 
+**Trabalhando com modules**
+
+- Maneira eficaz de organizar os componentes, proporcionando manter uma arquitetura ideal que possui vários módulos, cada um encapsulando um conjunto de recursos
+
+- Criamos um module
+
+                nest g module courses --no-spec
+
+- O Nest cria uma pasta em `src` com o arquivo do module e atualiza o arquivo `app.module.ts`
+
+- Com isso, não precisamos mais passar as dependencias para AppModule, podendo passar os services e controllers para CoursesModule e passando apenas CoursesModule para AppModule
+
+- `app.module.ts`
+
+        import { Module } from '@nestjs/common';
+        import { AppController } from './app.controller';
+        import { AppService } from './app.service';
+        import { CoursesModule } from './courses/courses.module';
+
+        @Module({
+          imports: [CoursesModule],
+          controllers: [AppController],
+          providers: [AppService],
+        })
+        export class AppModule {}
+
+- `courses.module.ts`
+
+        import { Module } from '@nestjs/common';
+        import { CoursesController } from './courses.controller';
+        import { CoursesService } from './courses.service';
+
+        @Module({
+          imports: [],
+          controllers: [CoursesController],
+          providers: [CoursesService],
+        })
+        export class CoursesModule {}
+
+**DTO**
+
+- Data Transfer Object
+
+- Objeteto usado para encapsular dados a serem enviados de uma aplicação para outra
+
+- Nos ajudam a definir as interfaces ou quais informações são recebidas pela aplicação
+
+- Forma de lidar com informações que veem do frontend para o backend
+
+- Pode ser criado através de uma classe ou interface
+
+- Define os atributos ou campos que devem ser considerados para o nosso serviço lidar
+
+        nest g class courses/dto/create-courses.dto --no-spec
+
+- Com os DTOs, podemos separar os dados das entities do que esperamos receber numa requisição
+
+- Como os DTOs servem apenas para tiparmos o que esperamos receber, podemos definid suas propriedades como `readonly`
+
+- `CreateCoursesDto`
+
+        export class CreateCoursesDto {
+          readonly name: string;
+          readonly description: string;
+          readonly tags?: string[];
+        }
+
+- `CoursesController`
+
+          @Post()
+          @HttpCode(HttpStatus.NO_CONTENT)
+          createCourse(@Body() body: CreateCoursesDto, @Res() res) {
+            const { name, description, tags } = body;
+            this.CoursesService.create({ name, description, tags });
+            return res.json();
+          }
+
+- Assim, faremos um DTO para cada caso necessário
+
+**Validação de dados / Validation Pipe**
+
+- Fornece uma maneira conveniente de aplicar regras de validação para todas as requisições que recebemos na nossa API
+
+- Para utilizarmos o recursos, precisaremos configurá-lo na nossa aplicação, chamando o método `useGlobalPipes()` no nosso arquivo `main`
+
+- Passamos como valor do método, a instanciação da classe `ValidationPipe()`
+
+- Além disso, precisaremos realizar uma instalação extra de dois pacotes adicionais
+
+        npm i class-validator class-transformer
+
+- Após a instalação dos pacotes, utilizamos os validadores nos nossos DTOs
+
+- Realizamos essas verifgicações através de decorators
+
+- É importante salientar que o módulo `class-decorators` só pode ser aplicado a classes
+
+import { IsString } from 'class-validator';
+
+        export class CreateCoursesDto {
+          @IsString()
+          readonly name: string;
+
+          @IsString()
+          readonly description: string;
+
+          @IsString({ each: true })
+          readonly tags: string[];
+        }
+
+- Por padrão, caso alguma das informaçõe snão estivar na requisição, o Neste retornará um objeto do sistema de validação, vindo do `class-validator`, com status 400 e detalhes sobre o erro
+
+- Muitas vezes, algumas informações de determinados DTOs serão parecidas. Para que não haja a necessidade de refazer todo um código, podemos utilizar o módulo do Nest `mapped-types`
+
+        npm i @nestjs/mapped-types
+
+- Após a instalação, podemos extender um DTO com um `PartialType()` e passar como parametro o DTO pai, o qual queremos pegar as informações
+
+        import { PartialType } from '@nestjs/mapped-types';
+        import { CreateCoursesDto } from './create-courses.dto';
+
+        export class UpdateCoursesDto extends PartialType(CreateCoursesDto) {}
+
+- Dessa forma, informamos que os campos vindos da classe pai são opcionais ma classe estendida
+
+*Whitelist*
+
+- Podemos filtrar propriedades que devem ser bloqueadas a partir da definição de uma lista, onde definimos quais propriedades são aceitaveis. Qualquer outra que seja enviada, será eliminada da requisição. Podemos fazer essas e outras definições atavés da passagem de configurações passadas no parâmetro da instanciação do ValidationPipe no arquivo main.ts
+
+        import { ValidationPipe } from '@nestjs/common';
+        import { NestFactory } from '@nestjs/core';
+        import { AppModule } from './app.module';
+
+        async function bootstrap() {
+          const app = await NestFactory.create(AppModule);
+          app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+          await app.listen(3000);
+        }
+        bootstrap();
+
+- Dessa forma, garantimos que apenas os dados listados nos DTOs serão utilizados, de forma que os demais dados que vierem do frontend serão retirados do objeto de requisição
+
+*ForbidNonWhitelisted*
+
+- Apesar da whitelist removeer os itens inesperados, ela ainda permite que os itens cheguem ao nosso backend, aprenas removendo-os da requisição e utilizando os dados esperados, o que pode acabar ainda assim sendo perigoso
+
+- Podemos atiavar a opção forbidNonWhitelisted para que ao ser identificado um item inesperado, a requisição seja recusada, com um erro 400 (bad request)
+
+                app.useGlobalPipes(
+                new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+                );
+
+- Assim, garantimos que a nossa aplicação não receberá informações indevidas
+
+*transform*
+
+- Podemos utilizar este parâmetro para que o nosso backend determine automaticamente o tipo dos dados da requisição como sendo do tipo do DTO
+
 *Comandos CLI*
 
 - Comandos `generate` podem ser abreviados para `g`

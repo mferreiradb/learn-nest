@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Body,
   Controller,
@@ -12,6 +13,8 @@ import {
   Delete,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
+import { CreateCoursesDto } from './dto/create-courses.dto';
+import { UpdateCoursesDto } from './dto/update-courses.dto';
 import { Course } from './entities/course.entity';
 
 @Controller('courses')
@@ -27,20 +30,23 @@ export class CoursesController {
   findOne(@Param() params): Course {
     const { idCourse } = params;
     const course = this.CoursesService.findOne(idCourse);
-    console.log(course);
     return course;
   }
 
   @Post()
-  @HttpCode(HttpStatus.NO_CONTENT)
-  createCourse(@Body() body, @Res() res) {
+  @HttpCode(201)
+  createCourse(@Body() body: CreateCoursesDto, @Res() res) {
     const { name, description, tags } = body;
-    this.CoursesService.create({ name, description, tags });
-    return res.json();
+    const course = this.CoursesService.create({ name, description, tags });
+    return res.json(course);
   }
 
   @Patch(':idCourse')
-  updateSomeDataCourses(@Body() body, @Param() params, @Res() res) {
+  updateSomeDataCourses(
+    @Body() body: UpdateCoursesDto,
+    @Param() params,
+    @Res() res,
+  ) {
     const { name, description } = body;
     const { idCourse } = params;
     const course = this.CoursesService.someDataUpdate(idCourse, {

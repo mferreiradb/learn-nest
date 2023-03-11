@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { CreateCoursesDto } from './dto/create-courses.dto';
+import { UpdateCoursesDto } from './dto/update-courses.dto';
 import { Course } from './entities/course.entity';
 
 @Injectable()
@@ -39,17 +41,21 @@ export class CoursesService {
     return course;
   }
 
-  create({ name, description, tags }: Course): void {
+  create(CreateCoursesDto: CreateCoursesDto): Course {
     const lastCourse = this.courses[this.courses.length - 1];
     const id = lastCourse.id + 1;
-    this.courses.push({ id, name, description, tags });
+    const course = { id, ...CreateCoursesDto };
+    this.courses.push(course);
+    return CreateCoursesDto;
   }
 
-  someDataUpdate(id: string, { name, description }: Course): Course {
-    const course = this.courses.find((course) => course.id == Number(id));
-    course.name = name;
-    course.description = description;
-    return course;
+  someDataUpdate(id: string, UpdateCoursesDto): void {
+    const idexCourse = this.courses.findIndex(
+      (course) => course.id === Number(id),
+    );
+
+    this.courses[idexCourse] = UpdateCoursesDto;
+    return UpdateCoursesDto;
   }
 
   delete(id: string) {
