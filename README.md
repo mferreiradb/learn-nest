@@ -1,4 +1,4 @@
-<h1 align="center">NEST JS</h1>
+<h1 align="center">Learn Nest JS</h1>
 
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
@@ -7,7 +7,9 @@
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+  <p align="center">Este repositório tem o objetivo de fornecer algumas orientações sobre os recursos fundamentais do Framework NestJS</p>
+  <p align="center">Fique a vontade para fazer o clone e aprender com a base de código, juntamente com o auxilio deste Readme</p>
+  <p align="center">Para mais clareza e compreensão, recomendo a <a href="https://www.youtube.com/watch?v=wTvnlgJb9hI&list=PLE0DHiXlN_qqRNX4KpkNKvFswCXHUwoyL">playlist</a> do professor <b>Jorge Aluizio</b>, de onde foi tirada a base de código</p>
     <p align="center">
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
