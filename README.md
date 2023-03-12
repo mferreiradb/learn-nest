@@ -23,7 +23,7 @@
   <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
 </p>
 
-- Instalação ClI
+- Instalação CLI
 
         npm i -g @nestjs/cli
 
@@ -109,7 +109,7 @@
                 }
                 }
 
-- Podemos gerar um controller pela cli
+- Podemos gerar um controller pela CLI
 
                 nest g controller <nome do controller>
 
@@ -133,7 +133,7 @@
                 }
                 }
 
-- Podemos gerar um serviço pela cli
+- Podemos gerar um serviço pela CLI
 
                 nest g service <nome do serviço>
 
